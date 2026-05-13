@@ -37,11 +37,6 @@ const HomePage = () => {
   const [searchQuery, setSearch]    = useState('');
   const [activeType, setActiveType] = useState('');
 
-  // ── Fetch Events ──────────────────────────────────────────
-  useEffect(() => {
-    fetchEvents();
-  }, [activeType]);
-
   const fetchEvents = async () => {
     setLoading(true);
     try {

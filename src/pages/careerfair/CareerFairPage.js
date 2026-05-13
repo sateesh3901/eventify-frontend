@@ -6,7 +6,7 @@ import { useAuth } from '../../context/AuthContext';
 import { SkeletonGrid } from '../../components/common/SkeletonCard';
 import toast from 'react-hot-toast';
 import {
-  FiBriefcase, FiMapPin, FiUsers,
+  FiMapPin, FiUsers,
   FiArrowLeft, FiUpload, FiExternalLink
 } from 'react-icons/fi';
 import './CareerFair.css';
@@ -14,7 +14,7 @@ import './CareerFair.css';
 const CareerFairPage = () => {
   const { eventId }             = useParams();
   const navigate                = useNavigate();
-  const { isLoggedIn, user }    = useAuth();
+  const { isLoggedIn }    = useAuth();
 
   const [event, setEvent]       = useState(null);
   const [jobs, setJobs]         = useState([]);
