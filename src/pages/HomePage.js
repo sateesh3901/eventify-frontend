@@ -55,6 +55,11 @@ const HomePage = () => {
     }
   };
 
+    // ── Fetch Events ──────────────────────────────────────────
+  useEffect(() => {
+    fetchEvents();
+  }, [activeType]);
+
   // ── Search ────────────────────────────────────────────────
   const handleSearch = (e) => {
     e.preventDefault();

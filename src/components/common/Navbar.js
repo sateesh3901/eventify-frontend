@@ -4,7 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { logoutUser } from '../../api/auth';
 import toast from 'react-hot-toast';
 import {
-  FiMenu, FiX, FiUser, FiLogOut,
+  FiMenu, FiX, FiLogOut,
   FiCalendar, FiHome, FiGrid
 } from 'react-icons/fi';
 import './Navbar.css';
