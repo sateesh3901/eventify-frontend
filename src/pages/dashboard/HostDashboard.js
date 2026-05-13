@@ -25,11 +25,11 @@ const HostDashboard = () => {
   const fetchAll = async () => {
     try {
       const [statsRes, eventsRes] = await Promise.all([
-        getHostDashboardStats(),
-        getMyEvents(),
-      ]);
-      setStats(statsRes.data.summary);
-      setEvents(eventsRes.data.events);
+  getHostDashboardStats(),
+  getMyEvents(),
+]);
+setStats(statsRes?.data?.summary || {});
+setEvents(eventsRes?.data?.events || []);
     } catch {
       toast.error('Failed to load dashboard.');
     } finally {

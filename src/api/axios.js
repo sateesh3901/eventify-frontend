@@ -20,6 +20,18 @@ API.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
+// ── Temporary debug logger ────────────────────────────────────
+API.interceptors.response.use(
+  (response) => {
+    console.log('API Response:', response.config.url, response.data);
+    return response;
+  },
+  async (error) => {
+    console.log('API Error:', error.config?.url, error.response?.data);
+    // ... rest of existing error handler
+  }
+);
+
 // ── Response interceptor — handle token expiry ────────────────
 API.interceptors.response.use(
   (response) => response,

@@ -37,14 +37,20 @@ const HomePage = () => {
   const [searchQuery, setSearch]    = useState('');
   const [activeType, setActiveType] = useState('');
 
-  const fetchEvents = async () => {
+const fetchEvents = async () => {
     setLoading(true);
     try {
       const params = { type: activeType || undefined };
       const res    = await getAllEvents(params);
-      setEvents(res.data.events.slice(0, 6)); // show 6 on home
+
+      // ── Safe check ────────────────────────────────────────
+      const eventsData = res?.data?.events || res?.data || [];
+      const safeEvents = Array.isArray(eventsData) ? eventsData : [];
+      setEvents(safeEvents.slice(0, 6));
+
     } catch {
       toast.error('Failed to load events.');
+      setEvents([]);
     } finally {
       setLoading(false);
     }

@@ -43,7 +43,7 @@ const EventsPage = () => {
     fetchEvents();
   }, [activeType, search]);
 
-  const fetchEvents = async () => {
+const fetchEvents = async () => {
     setLoading(true);
     try {
       const params = {
@@ -51,9 +51,14 @@ const EventsPage = () => {
         search : search     || undefined,
       };
       const res = await getAllEvents(params);
-      setEvents(res.data.events);
+
+      // ── Safe check ────────────────────────────────────────
+      const eventsData = res?.data?.events || res?.data || [];
+      setEvents(Array.isArray(eventsData) ? eventsData : []);
+
     } catch {
       toast.error('Failed to load events.');
+      setEvents([]);
     } finally {
       setLoading(false);
     }

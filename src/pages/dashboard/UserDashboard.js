@@ -27,14 +27,14 @@ const UserDashboard = () => {
 
   const fetchAll = async () => {
     try {
-      const [statsRes, ticketsRes, appsRes] = await Promise.all([
-        getUserDashboardStats(),
-        getMyTickets(),
-        getMyApplications(),
-      ]);
-      setStats(statsRes.data.stats);
-      setTickets(ticketsRes.data.tickets);
-      setApps(appsRes.data.applications);
+const [statsRes, ticketsRes, appsRes] = await Promise.all([
+  getUserDashboardStats(),
+  getMyTickets(),
+  getMyApplications(),
+]);
+setStats(statsRes?.data?.stats || {});
+setTickets(ticketsRes?.data?.tickets || []);
+setApps(appsRes?.data?.applications || []);
     } catch {
       toast.error('Failed to load dashboard.');
     } finally {
