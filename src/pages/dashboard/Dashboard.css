@@ -1,0 +1,439 @@
+/* ── Dashboard Header ───────────────────────────────────────── */
+.dashboard-header {
+  background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+  padding: 40px 0;
+  margin-bottom: 32px;
+}
+
+.dashboard-header__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.dashboard-header__title {
+  font-size: 1.8rem;
+  color: var(--white);
+  margin-bottom: 6px;
+}
+
+.dashboard-header__subtitle {
+  color: rgba(255,255,255,0.75);
+  font-size: 0.95rem;
+}
+
+.dashboard-header__avatar {
+  width: 56px;
+  height: 56px;
+  background: rgba(255,255,255,0.2);
+  color: var(--white);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* ── Dashboard Content ──────────────────────────────────────── */
+.dashboard-content { padding-bottom: 60px; }
+
+/* ── Stat Cards ─────────────────────────────────────────────── */
+.dashboard-stats { margin-bottom: 24px; }
+
+.dash-stat-card .card-body {
+  padding: 20px;
+}
+
+.dash-stat-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.dash-stat-card__icon { font-size: 1.8rem; }
+
+.dash-stat-card__value {
+  font-size: 1.8rem;
+  font-weight: 800;
+  font-family: 'Poppins', sans-serif;
+}
+
+.dash-stat-card__label {
+  font-size: 0.85rem;
+  color: var(--text-light);
+  font-weight: 500;
+}
+
+/* ── Mini Cards ─────────────────────────────────────────────── */
+.dash-mini-card .card-body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 6px;
+}
+
+.dash-mini-card__icon  { font-size: 1.5rem; }
+.dash-mini-card__value {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--primary);
+  font-family: 'Poppins', sans-serif;
+}
+.dash-mini-card__label { font-size: 0.8rem; color: var(--text-light); }
+
+/* ── Tabs ───────────────────────────────────────────────────── */
+.dash-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  border-bottom: 2px solid var(--border);
+  padding-bottom: 0;
+}
+
+.dash-tab {
+  padding: 10px 20px;
+  background: none;
+  border: none;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-light);
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  transition: var(--transition);
+}
+
+.dash-tab:hover { color: var(--primary); }
+
+.dash-tab--active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
+
+.dash-tab-content { margin-bottom: 24px; }
+
+/* ── Ticket Cards ───────────────────────────────────────────── */
+.tickets-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ticket-card__inner {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.ticket-card__qr {
+  width: 80px;
+  height: 80px;
+  flex-shrink: 0;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ticket-card__qr img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ticket-card__qr-placeholder { font-size: 2rem; }
+
+.ticket-card__info { flex: 1; }
+
+.ticket-card__event {
+  font-size: 1rem;
+  color: var(--primary);
+  margin-bottom: 6px;
+}
+
+.ticket-meta {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+
+.ticket-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  color: var(--text-light);
+}
+
+.ticket-card__code {
+  font-size: 0.8rem;
+  color: var(--gray-400);
+  font-family: monospace;
+}
+
+.ticket-card__status {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+/* ── Application Cards ──────────────────────────────────────── */
+.applications-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.app-card__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.app-card__title {
+  font-size: 1rem;
+  color: var(--primary);
+  margin-bottom: 4px;
+}
+
+.app-card__company {
+  font-size: 0.9rem;
+  color: var(--text-light);
+  margin-bottom: 4px;
+}
+
+.app-card__date {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  color: var(--gray-400);
+}
+
+/* ── App Summary ────────────────────────────────────────────── */
+.app-summary { margin-bottom: 24px; }
+
+.app-summary__grid {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.app-summary__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.app-summary__count {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+/* ── Section Header ─────────────────────────────────────────── */
+.dash-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.dash-section-title {
+  font-size: 1.2rem;
+  color: var(--primary);
+}
+
+/* ── Events Table ───────────────────────────────────────────── */
+.events-table-wrapper { overflow-x: auto; }
+
+.events-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.events-table th {
+  text-align: left;
+  padding: 12px 16px;
+  background: var(--light);
+  color: var(--gray-600);
+  font-weight: 600;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid var(--border);
+}
+
+.events-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+.events-table tr:hover td { background: var(--light); }
+.events-table tr:last-child td { border-bottom: none; }
+
+.table-event-title {
+  font-weight: 600;
+  color: var(--primary);
+  margin-bottom: 2px;
+}
+
+.table-event-city {
+  font-size: 0.8rem;
+  color: var(--text-light);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.table-date {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--gray-600);
+  font-size: 0.88rem;
+}
+
+.table-tickets {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.88rem;
+  color: var(--gray-600);
+}
+
+.mini-progress {
+  width: 80px;
+  height: 5px;
+  background: var(--gray-200);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.mini-progress__fill {
+  height: 100%;
+  background: var(--primary-light);
+  border-radius: 10px;
+}
+
+/* ── Action Buttons ─────────────────────────────────────────── */
+.table-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.action-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  transition: var(--transition);
+  background: none;
+  border: none;
+}
+
+.action-btn--view   { color: var(--primary-light); background: var(--light-blue); }
+.action-btn--edit   { color: var(--warning);        background: #fff3cd; }
+.action-btn--delete { color: var(--danger);          background: #fef2f2; }
+
+.action-btn--view:hover   { background: var(--primary-light); color: var(--white); }
+.action-btn--edit:hover   { background: var(--warning);        color: var(--white); }
+.action-btn--delete:hover { background: var(--danger);          color: var(--white); }
+
+/* ── Responsive ─────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .dashboard-header__avatar { display: none; }
+  .ticket-card__qr          { display: none; }
+  .events-table th:nth-child(3),
+  .events-table td:nth-child(3) { display: none; }
+}
+
+
+
+/* ── Admin Dashboard ────────────────────────────────────────── */
+.admin-header-badges {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.rank-badge { font-size: 1.1rem; }
+
+.host-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.host-pill__avatar {
+  width: 28px;
+  height: 28px;
+  background: var(--primary);
+  color: var(--white);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.fill-rate {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.fill-rate__pct {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--gray-600);
+}
+
+/* ── Health Cards ───────────────────────────────────────────── */
+.health-items {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.health-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: var(--light);
+  border-radius: var(--radius-sm);
+}
+
+.health-item__label {
+  font-size: 0.9rem;
+  color: var(--gray-600);
+  font-weight: 500;
+}
+
+.health-item__value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  font-family: 'Poppins', sans-serif;
+}

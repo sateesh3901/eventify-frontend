@@ -1,0 +1,149 @@
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: var(--white);
+  box-shadow: var(--shadow-sm);
+  border-bottom: 3px solid var(--primary);
+}
+
+.navbar__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 68px;
+}
+
+/* ── Logo ── */
+.navbar__logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--primary);
+}
+
+.navbar__logo-icon { font-size: 1.6rem; }
+
+.navbar__logo-text span {
+  color: var(--accent);
+}
+
+/* ── Links ── */
+.navbar__links {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.navbar__link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+  font-size: 0.95rem;
+  color: var(--gray-700);
+  transition: var(--transition);
+}
+
+.navbar__link:hover {
+  background: var(--light-blue);
+  color: var(--primary);
+}
+
+/* ── Auth ── */
+.navbar__auth { display: flex; align-items: center; }
+
+.navbar__user {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.navbar__user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.navbar__avatar {
+  width: 38px;
+  height: 38px;
+  background: var(--primary);
+  color: var(--white);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.navbar__user-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.navbar__username {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--primary);
+}
+
+.navbar__role {
+  font-size: 0.75rem;
+  color: var(--text-light);
+  text-transform: capitalize;
+}
+
+.navbar__guest {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ── Mobile ── */
+.navbar__toggle {
+  display: none;
+  background: none;
+  font-size: 1.5rem;
+  color: var(--primary);
+  padding: 4px;
+}
+
+.navbar__mobile {
+  display: flex;
+  flex-direction: column;
+  padding: 16px 24px;
+  border-top: 1px solid var(--border);
+  background: var(--white);
+  gap: 4px;
+}
+
+.navbar__mobile a,
+.navbar__mobile button {
+  padding: 10px 16px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--gray-700);
+  border-radius: var(--radius-sm);
+  background: none;
+  text-align: left;
+  width: 100%;
+}
+
+.navbar__mobile a:hover,
+.navbar__mobile button:hover {
+  background: var(--light-blue);
+  color: var(--primary);
+}
+
+@media (max-width: 768px) {
+  .navbar__links,
+  .navbar__auth    { display: none; }
+  .navbar__toggle  { display: block; }
+}

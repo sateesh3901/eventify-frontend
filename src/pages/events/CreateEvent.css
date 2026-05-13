@@ -1,0 +1,180 @@
+/* ── Create Event Header ────────────────────────────────────── */
+.create-event__header {
+  background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+  padding: 40px 0;
+  margin-bottom: 32px;
+}
+
+.create-event__title {
+  font-size: 2rem;
+  color: var(--white);
+  margin-bottom: 6px;
+}
+
+.create-event__subtitle {
+  color: rgba(255,255,255,0.75);
+}
+
+/* ── Grid ───────────────────────────────────────────────────── */
+.create-event__grid {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 32px;
+  padding-bottom: 60px;
+  align-items: start;
+}
+
+/* ── Form Sections ──────────────────────────────────────────── */
+.form-section { margin-bottom: 20px; }
+
+.form-section__title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1rem;
+  color: var(--primary);
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--border);
+}
+
+/* ── Form Row ───────────────────────────────────────────────── */
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* ── Textarea ───────────────────────────────────────────────── */
+.form-textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+/* ── Select ─────────────────────────────────────────────────── */
+.select-wrapper {
+  position: relative;
+}
+
+.select-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--gray-400);
+  pointer-events: none;
+}
+
+.form-select {
+  width: 100%;
+  cursor: pointer;
+  appearance: none;
+}
+
+/* ── Hint ───────────────────────────────────────────────────── */
+.form-hint {
+  font-size: 0.8rem;
+  color: var(--text-light);
+  margin-top: 4px;
+}
+
+/* ── Actions ────────────────────────────────────────────────── */
+.create-event__actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+/* ── Preview Card ───────────────────────────────────────────── */
+.create-event__preview {
+  position: sticky;
+  top: 88px;
+}
+
+.preview-card__banner {
+  height: 140px;
+  background: linear-gradient(135deg, var(--light-blue), var(--primary-light));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.preview-card__emoji {
+  font-size: 3.5rem;
+  opacity: 0.7;
+}
+
+.preview-card__badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  font-size: 0.75rem;
+}
+
+.preview-card__title {
+  font-size: 1rem;
+  color: var(--primary);
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+
+.preview-card__desc {
+  font-size: 0.85rem;
+  color: var(--text-light);
+  line-height: 1.6;
+  margin-bottom: 14px;
+}
+
+.preview-card__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.preview-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+/* ── Tips ───────────────────────────────────────────────────── */
+.create-tips { margin-top: 16px; }
+
+.create-tips__title {
+  font-size: 0.95rem;
+  color: var(--primary);
+  margin-bottom: 14px;
+}
+
+.create-tips__list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.create-tips__list li {
+  font-size: 0.88rem;
+  color: var(--text-light);
+}
+
+/* ── Responsive ─────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .create-event__grid {
+    grid-template-columns: 1fr;
+  }
+  .create-event__preview {
+    position: static;
+    order: -1;
+  }
+}
+
+@media (max-width: 768px) {
+  .form-row { grid-template-columns: 1fr; }
+  .create-event__actions { flex-direction: column; }
+  .create-event__actions .btn { width: 100%; justify-content: center; }
+}
