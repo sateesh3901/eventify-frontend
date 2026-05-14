@@ -328,3 +328,47 @@
   font-weight: 600;
   margin-bottom: 12px;
 }
+
+
+/* ── Ticket Required Banner ─────────────────────────────────── */
+.ticket-required-banner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: #fff3cd;
+  border: 2px solid var(--warning);
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+  margin-bottom: 24px;
+}
+
+.ticket-required-banner span {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.ticket-required-banner__title {
+  font-weight: 700;
+  color: var(--warning);
+  margin-bottom: 4px;
+}
+
+.ticket-required-banner__desc {
+  font-size: 0.85rem;
+  color: var(--text-light);
+}
+
+/* ── Ticket Valid Banner ─────────────────────────────────────── */
+.ticket-valid-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #d4edda;
+  border: 2px solid var(--success);
+  border-radius: var(--radius-md);
+  padding: 14px 20px;
+  margin-bottom: 24px;
+  font-weight: 600;
+  color: var(--success);
+  font-size: 0.95rem;
+}

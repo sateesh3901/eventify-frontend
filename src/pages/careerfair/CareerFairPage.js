@@ -12,12 +12,15 @@ import {
   FiCheck
 } from 'react-icons/fi';
 import './CareerFair.css';
+import { getMyTickets } from '../../api/tickets';
 
 const CareerFairPage = () => {
+
   const { eventId }           = useParams();
   const navigate              = useNavigate();
   const { isLoggedIn, user }  = useAuth();
 
+  const [hasTicket, setHasTicket] = useState(false); // ← add this state at top
   const [event, setEvent]           = useState(null);
   const [jobs, setJobs]             = useState([]);
   const [loading, setLoading]       = useState(true);
@@ -39,7 +42,7 @@ const CareerFairPage = () => {
 
   useEffect(() => { fetchAll(); }, [eventId]);
 
-  const fetchAll = async () => {
+const fetchAll = async () => {
     try {
       const [eventRes, jobsRes] = await Promise.all([
         getEventDetail(eventId),
@@ -50,27 +53,36 @@ const CareerFairPage = () => {
       const jobsData = jobsRes?.data?.jobs || jobsRes?.data || [];
       setJobs(Array.isArray(jobsData) ? jobsData : []);
 
-      // ── Fetch user's existing applications ───────────────
+      // ── Check if user has ticket + fetch applications ─────
       if (isLoggedIn) {
         try {
-          const appsRes = await getMyApplications();
-          const apps    = appsRes?.data?.applications || [];
-          const appliedJobIds = apps.map(app => app.job);
-          setAppliedJobs(appliedJobIds);
+          const appsRes  = await getMyApplications();
+          const apps     = appsRes?.data?.applications || [];
+          const appliedIds = apps.map(app => app.job_id);
+          setAppliedJobs(appliedIds);
+
+          // ── Check ticket ──────────────────────────────────
+          const ticketsRes = await getMyTickets();
+          const tickets    = ticketsRes?.data?.tickets || [];
+          const ticketForEvent = tickets.find(
+            t => t.event?.id === parseInt(eventId) &&
+                 ['completed', 'free'].includes(t.payment_status)
+          );
+          setHasTicket(!!ticketForEvent);
+
         } catch {
-          // Not logged in or error — ignore
+          setAppliedJobs([]);
+          setHasTicket(false);
         }
       }
 
     } catch (error) {
-      console.log('Career fair error:', error?.response?.data);
       toast.error('Failed to load career fair data.');
       navigate('/events');
     } finally {
       setLoading(false);
     }
   };
-
   // ── Check if already applied ──────────────────────────────
   const hasApplied = (jobId) => appliedJobs.includes(jobId);
 
@@ -202,6 +214,50 @@ const CareerFairPage = () => {
       </div>
 
       <div className="container">
+       {/* ── Ticket Required Banner ── */}
+{isLoggedIn && !hasTicket && (
+  <div className="ticket-required-banner">
+    <span>🎟️</span>
+    <div>
+      <p className="ticket-required-banner__title">
+        Ticket Required to Apply
+      </p>
+      <p className="ticket-required-banner__desc">
+        You need a valid ticket for this event to apply for jobs.
+      </p>
+    </div>
+    <Link
+      to={`/events/${eventId}`}
+      className="btn btn-accent btn-sm"
+    >
+      Get Ticket →
+    </Link>
+  </div>
+)}
+
+{!isLoggedIn && (
+  <div className="ticket-required-banner">
+    <span>🔒</span>
+    <div>
+      <p className="ticket-required-banner__title">
+        Login Required
+      </p>
+      <p className="ticket-required-banner__desc">
+        Please login and get a ticket to apply for jobs.
+      </p>
+    </div>
+    <Link to="/login" className="btn btn-accent btn-sm">
+      Login →
+    </Link>
+  </div>
+)}
+
+{isLoggedIn && hasTicket && (
+  <div className="ticket-valid-banner">
+    <span>✅</span>
+    <p>You have a valid ticket — you can apply for jobs!</p>
+  </div>
+)} 
 
         {/* ── Filter Bar ── */}
         <div className="cf-filters">
@@ -324,33 +380,39 @@ const CareerFairPage = () => {
                         </span>
                       </div>
 
-                      {/* Apply Button */}
-                      {alreadyApplied ? (
-                        <button
-                          className="btn btn-sm"
-                          disabled
-                          style={{
-                            background : 'var(--success)',
-                            color      : 'white',
-                            opacity    : 1,
-                            cursor     : 'default'
-                          }}
-                        >
-                          <FiCheck /> Applied
-                        </button>
-                      ) : (
-                        <button
-                          className="btn btn-primary btn-sm"
-                          onClick={() => openApplyModal(job)}
-                          disabled={applying === job.id}
-                        >
-                          {applying === job.id ? (
-                            <><span className="btn-spinner"></span> Applying...</>
-                          ) : (
-                            'Apply Now'
-                          )}
-                        </button>
-                      )}
+                     {alreadyApplied ? (
+  <button
+    className="btn btn-sm"
+    disabled
+    style={{
+      background : 'var(--success)',
+      color      : 'white',
+      opacity    : 1,
+      cursor     : 'default'
+    }}
+  >
+    <FiCheck /> Applied
+  </button>
+) : !hasTicket ? (
+  <Link
+    to={`/events/${eventId}`}
+    className="btn btn-sm btn-outline"
+  >
+    🎟️ Get Ticket
+  </Link>
+) : (
+  <button
+    className="btn btn-primary btn-sm"
+    onClick={() => openApplyModal(job)}
+    disabled={applying === job.id}
+  >
+    {applying === job.id ? (
+      <><span className="btn-spinner"></span> Applying...</>
+    ) : (
+      'Apply Now'
+    )}
+  </button>
+)}
                     </div>
 
                   </div>
