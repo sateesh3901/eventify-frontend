@@ -260,27 +260,26 @@ const CareerFairPage = () => {
                       </div>
                     )}
 
-                    {/* Company Header */}
-                    <div className="job-card__company">
-                      <div className="job-card__company-avatar">
-                        {job.company_name?.charAt(0)}
-                      </div>
-                      <div>
-                        <p className="job-card__company-name">
-                          {job.company_name}
-                        </p>
-                        {job.company_website && (
-                          
-                            href={job.company_website}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="job-card__website"
-                          >
-                            <FiExternalLink size={12} /> Website
-                          </a>
-                        )}
-                      </div>
-                    </div>
+                  <div className="job-card__company">
+  <div className="job-card__company-avatar">
+    {job.company_name?.charAt(0)}
+  </div>
+  <div>
+    <p className="job-card__company-name">
+      {job.company_name}
+    </p>
+    {job.company_website && (
+      <a
+        href={job.company_website}
+        target="_blank"
+        rel="noreferrer"
+        className="job-card__website"
+      >
+        <FiExternalLink size={12} /> Website
+      </a>
+    )}
+  </div>
+</div>
 
                     {/* Job Title */}
                     <h3 className="job-card__title">{job.job_title}</h3>
