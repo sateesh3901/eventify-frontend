@@ -12,7 +12,7 @@ import {
 } from 'react-icons/fi';
 import './Dashboard.css';
 import { copyToClipboard, formatTicketCode } from '../../utils/helpers';
-import { getMyApplications } from '../../api/careerfair';
+
 
 const UserDashboard = () => {
   const { user }                    = useAuth();
