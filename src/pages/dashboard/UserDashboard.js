@@ -12,6 +12,7 @@ import {
 } from 'react-icons/fi';
 import './Dashboard.css';
 import { copyToClipboard, formatTicketCode } from '../../utils/helpers';
+import { getMyApplications } from '../../api/careerfair';
 
 const UserDashboard = () => {
   const { user }                    = useAuth();
@@ -25,17 +26,22 @@ const UserDashboard = () => {
     fetchAll();
   }, []);
 
-  const fetchAll = async () => {
+const fetchAll = async () => {
     try {
-const [statsRes, ticketsRes, appsRes] = await Promise.all([
-  getUserDashboardStats(),
-  getMyTickets(),
-  getMyApplications(),
-]);
-setStats(statsRes?.data?.stats || {});
-setTickets(ticketsRes?.data?.tickets || []);
-setApps(appsRes?.data?.applications || []);
-    } catch {
+      const [statsRes, ticketsRes, appsRes] = await Promise.all([
+        getUserDashboardStats(),
+        getMyTickets(),
+        getMyApplications(),
+      ]);
+      setStats(statsRes?.data?.stats || {});
+      setTickets(ticketsRes?.data?.tickets || []);
+
+      // ── Safe applications data ────────────────────────────
+      const appsData = appsRes?.data?.applications || appsRes?.data || [];
+      setApps(Array.isArray(appsData) ? appsData : []);
+
+    } catch (error) {
+      console.log('Dashboard error:', error?.response?.data);
       toast.error('Failed to load dashboard.');
     } finally {
       setLoading(false);

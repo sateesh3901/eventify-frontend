@@ -1,32 +1,35 @@
+/* eslint-disable */
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getEventDetail } from '../../api/events';
-import { getJobOpenings, applyForJob } from '../../api/careerfair';
+import { getJobOpenings, applyForJob, getMyApplications } from '../../api/careerfair';
 import { useAuth } from '../../context/AuthContext';
 import { SkeletonGrid } from '../../components/common/SkeletonCard';
 import toast from 'react-hot-toast';
 import {
-  FiMapPin, FiUsers,
-  FiArrowLeft, FiUpload, FiExternalLink
+  FiBriefcase, FiMapPin, FiUsers,
+  FiArrowLeft, FiUpload, FiExternalLink,
+  FiCheck
 } from 'react-icons/fi';
 import './CareerFair.css';
 
 const CareerFairPage = () => {
-  const { eventId }             = useParams();
-  const navigate                = useNavigate();
-  const { isLoggedIn }    = useAuth();
+  const { eventId }           = useParams();
+  const navigate              = useNavigate();
+  const { isLoggedIn, user }  = useAuth();
 
-  const [event, setEvent]       = useState(null);
-  const [jobs, setJobs]         = useState([]);
-  const [loading, setLoading]   = useState(true);
-  const [applying, setApplying] = useState(null);
-  const [search, setSearch]     = useState('');
-  const [experience, setExp]    = useState('');
+  const [event, setEvent]           = useState(null);
+  const [jobs, setJobs]             = useState([]);
+  const [loading, setLoading]       = useState(true);
+  const [applying, setApplying]     = useState(null);
+  const [search, setSearch]         = useState('');
+  const [experience, setExp]        = useState('');
+  const [appliedJobs, setAppliedJobs] = useState([]); // ← track applied jobs
 
   // Apply Modal State
-  const [showModal, setShowModal]   = useState(false);
+  const [showModal, setShowModal]     = useState(false);
   const [selectedJob, setSelectedJob] = useState(null);
-  const [applyForm, setApplyForm]   = useState({
+  const [applyForm, setApplyForm]     = useState({
     cover_letter  : '',
     github_url    : '',
     linkedin_url  : '',
@@ -42,9 +45,25 @@ const CareerFairPage = () => {
         getEventDetail(eventId),
         getJobOpenings(eventId),
       ]);
-      setEvent(eventRes.data.event);
-      setJobs(jobsRes.data.jobs);
-    } catch {
+
+      setEvent(eventRes?.data?.event || null);
+      const jobsData = jobsRes?.data?.jobs || jobsRes?.data || [];
+      setJobs(Array.isArray(jobsData) ? jobsData : []);
+
+      // ── Fetch user's existing applications ───────────────
+      if (isLoggedIn) {
+        try {
+          const appsRes = await getMyApplications();
+          const apps    = appsRes?.data?.applications || [];
+          const appliedJobIds = apps.map(app => app.job);
+          setAppliedJobs(appliedJobIds);
+        } catch {
+          // Not logged in or error — ignore
+        }
+      }
+
+    } catch (error) {
+      console.log('Career fair error:', error?.response?.data);
       toast.error('Failed to load career fair data.');
       navigate('/events');
     } finally {
@@ -52,32 +71,35 @@ const CareerFairPage = () => {
     }
   };
 
-  const fetchJobs = async () => {
-    try {
-      const res = await getJobOpenings(eventId, {
-        search     : search     || undefined,
-        experience : experience || undefined,
-      });
-      setJobs(res.data.jobs);
-    } catch {
-      toast.error('Failed to filter jobs.');
-    }
-  };
+  // ── Check if already applied ──────────────────────────────
+  const hasApplied = (jobId) => appliedJobs.includes(jobId);
 
-  // ── Open Apply Modal ──────────────────────────────────────────
+  // ── Open Apply Modal ──────────────────────────────────────
   const openApplyModal = (job) => {
     if (!isLoggedIn) {
       toast.error('Please login to apply!');
       navigate('/login');
       return;
     }
+    if (hasApplied(job.id)) {
+      toast.error('You have already applied for this job!');
+      return;
+    }
     setSelectedJob(job);
     setShowModal(true);
+    setResumeFile(null);
+    setApplyForm({
+      cover_letter  : '',
+      github_url    : '',
+      linkedin_url  : '',
+      portfolio_url : '',
+    });
   };
 
-  // ── Submit Application ────────────────────────────────────────
+  // ── Submit Application ────────────────────────────────────
   const handleApply = async (e) => {
     e.preventDefault();
+
     if (!resumeFile) {
       toast.error('Please upload your resume!');
       return;
@@ -91,21 +113,31 @@ const CareerFairPage = () => {
     formData.append('portfolio_url', applyForm.portfolio_url);
 
     setApplying(selectedJob.id);
+
     try {
       await applyForJob(selectedJob.id, formData);
-      toast.success(`🎉 Applied for "${selectedJob.job_title}" successfully!`);
+      toast.success(`🎉 Applied for "${selectedJob.job_title}" at ${selectedJob.company_name}!`);
+
+      // ── Mark job as applied locally ─────────────────────
+      setAppliedJobs(prev => [...prev, selectedJob.id]);
       setShowModal(false);
-      setResumeFile(null);
-      setApplyForm({ cover_letter: '', github_url: '', linkedin_url: '', portfolio_url: '' });
+
     } catch (error) {
-      const msg = error.response?.data?.message || 'Application failed.';
-      toast.error(msg);
+      const msg = error?.response?.data?.message || 'Application failed.';
+      // Handle already applied error from backend
+      if (error?.response?.status === 400) {
+        toast.error('You have already applied for this job!');
+        setAppliedJobs(prev => [...prev, selectedJob.id]);
+        setShowModal(false);
+      } else {
+        toast.error(msg);
+      }
     } finally {
       setApplying(null);
     }
   };
 
-  // ── Filter Jobs ───────────────────────────────────────────────
+  // ── Filter Jobs ───────────────────────────────────────────
   const filteredJobs = jobs.filter(job => {
     const matchSearch = !search ||
       job.job_title.toLowerCase().includes(search.toLowerCase()) ||
@@ -116,11 +148,11 @@ const CareerFairPage = () => {
   });
 
   const EXPERIENCE_OPTIONS = [
-    { value: '',         label: 'All Experience' },
-    { value: 'fresher',  label: 'Fresher (0-1 yrs)' },
-    { value: 'junior',   label: 'Junior (1-3 yrs)' },
+    { value: '',         label: 'All Experience'       },
+    { value: 'fresher',  label: 'Fresher (0-1 yrs)'   },
+    { value: 'junior',   label: 'Junior (1-3 yrs)'    },
     { value: 'mid',      label: 'Mid Level (3-5 yrs)' },
-    { value: 'senior',   label: 'Senior (5+ yrs)' },
+    { value: 'senior',   label: 'Senior (5+ yrs)'     },
   ];
 
   const JOB_TYPE_COLORS = {
@@ -142,6 +174,7 @@ const CareerFairPage = () => {
           >
             <FiArrowLeft /> Back to Event
           </button>
+
           <div className="careerfair-header__inner">
             <div>
               <span className="careerfair-header__tag">💼 Career Fair</span>
@@ -159,7 +192,7 @@ const CareerFairPage = () => {
               </div>
               <div className="cf-stat">
                 <span className="cf-stat__value">
-                  {jobs.reduce((acc, j) => acc + j.total_applications, 0)}
+                  {jobs.reduce((acc, j) => acc + (j.total_applications || 0), 0)}
                 </span>
                 <span className="cf-stat__label">Total Applicants</span>
               </div>
@@ -190,9 +223,14 @@ const CareerFairPage = () => {
           </select>
         </div>
 
-        {/* ── Results ── */}
+        {/* ── Results Count ── */}
         <p className="events-count" style={{ marginBottom: '20px' }}>
           Showing <strong>{filteredJobs.length}</strong> job openings
+          {isLoggedIn && appliedJobs.length > 0 && (
+            <span style={{ color: 'var(--success)', marginLeft: '12px' }}>
+              ✅ Applied to {appliedJobs.length} job{appliedJobs.length > 1 ? 's' : ''}
+            </span>
+          )}
         </p>
 
         {/* ── Jobs Grid ── */}
@@ -206,86 +244,120 @@ const CareerFairPage = () => {
           </div>
         ) : (
           <div className="grid-3 cf-jobs-grid">
-            {filteredJobs.map((job) => (
-              <div className="job-card card" key={job.id}>
-                <div className="card-body">
+            {filteredJobs.map((job) => {
+              const alreadyApplied = hasApplied(job.id);
+              return (
+                <div
+                  className={`job-card card ${alreadyApplied ? 'job-card--applied' : ''}`}
+                  key={job.id}
+                >
+                  <div className="card-body">
 
-                  {/* Company Header */}
-                  <div className="job-card__company">
-                    <div className="job-card__company-avatar">
-                      {job.company_name.charAt(0)}
+                    {/* Already Applied Banner */}
+                    {alreadyApplied && (
+                      <div className="applied-banner">
+                        <FiCheck /> Already Applied
+                      </div>
+                    )}
+
+                    {/* Company Header */}
+                    <div className="job-card__company">
+                      <div className="job-card__company-avatar">
+                        {job.company_name?.charAt(0)}
+                      </div>
+                      <div>
+                        <p className="job-card__company-name">
+                          {job.company_name}
+                        </p>
+                        {job.company_website && (
+                          
+                            href={job.company_website}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="job-card__website"
+                          >
+                            <FiExternalLink size={12} /> Website
+                          </a>
+                        )}
+                      </div>
                     </div>
-                    <div>
-                      <p className="job-card__company-name">{job.company_name}</p>
-                      {job.company_website && (
-                        <a
-                          href={job.company_website}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="job-card__website"
+
+                    {/* Job Title */}
+                    <h3 className="job-card__title">{job.job_title}</h3>
+
+                    {/* Badges */}
+                    <div className="job-card__badges">
+                      <span className={`badge ${JOB_TYPE_COLORS[job.job_type] || 'badge-gray'}`}>
+                        {job.job_type?.replace('_', ' ')}
+                      </span>
+                      <span className="badge badge-primary">
+                        {job.experience}
+                      </span>
+                    </div>
+
+                    {/* Description */}
+                    <p className="job-card__desc">
+                      {job.description?.slice(0, 120)}...
+                    </p>
+
+                    {/* Skills */}
+                    <div className="job-card__skills">
+                      {job.skills_required?.split(',').slice(0, 4).map((skill, i) => (
+                        <span key={i} className="skill-tag">
+                          {skill.trim()}
+                        </span>
+                      ))}
+                    </div>
+
+                    {/* Footer */}
+                    <div className="job-card__footer">
+                      <div className="job-card__meta">
+                        {job.salary_range && (
+                          <span className="job-salary">
+                            💰 {job.salary_range}
+                          </span>
+                        )}
+                        <span className="job-openings">
+                          <FiUsers size={12} /> {job.openings_count} openings
+                        </span>
+                        <span className="job-applicants">
+                          📋 {job.total_applications} applied
+                        </span>
+                      </div>
+
+                      {/* Apply Button */}
+                      {alreadyApplied ? (
+                        <button
+                          className="btn btn-sm"
+                          disabled
+                          style={{
+                            background : 'var(--success)',
+                            color      : 'white',
+                            opacity    : 1,
+                            cursor     : 'default'
+                          }}
                         >
-                          <FiExternalLink size={12} /> Website
-                        </a>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Job Title */}
-                  <h3 className="job-card__title">{job.job_title}</h3>
-
-                  {/* Badges */}
-                  <div className="job-card__badges">
-                    <span className={`badge ${JOB_TYPE_COLORS[job.job_type] || 'badge-gray'}`}>
-                      {job.job_type.replace('_', ' ')}
-                    </span>
-                    <span className="badge badge-primary">
-                      {job.experience}
-                    </span>
-                  </div>
-
-                  {/* Description */}
-                  <p className="job-card__desc">
-                    {job.description.slice(0, 120)}...
-                  </p>
-
-                  {/* Skills */}
-                  <div className="job-card__skills">
-                    {job.skills_required.split(',').slice(0, 4).map((skill, i) => (
-                      <span key={i} className="skill-tag">
-                        {skill.trim()}
-                      </span>
-                    ))}
-                  </div>
-
-                  {/* Footer */}
-                  <div className="job-card__footer">
-                    <div className="job-card__meta">
-                      {job.salary_range && (
-                        <span className="job-salary">💰 {job.salary_range}</span>
-                      )}
-                      <span className="job-openings">
-                        <FiUsers size={12} /> {job.openings_count} openings
-                      </span>
-                      <span className="job-applicants">
-                        📋 {job.total_applications} applied
-                      </span>
-                    </div>
-                    <button
-                      className="btn btn-primary btn-sm"
-                      onClick={() => openApplyModal(job)}
-                      disabled={applying === job.id}
-                    >
-                      {applying === job.id ? (
-                        <><span className="btn-spinner"></span> Applying...</>
+                          <FiCheck /> Applied
+                        </button>
                       ) : (
-                        'Apply Now'
+                        <button
+                          className="btn btn-primary btn-sm"
+                          onClick={() => openApplyModal(job)}
+                          disabled={applying === job.id}
+                        >
+                          {applying === job.id ? (
+                            <><span className="btn-spinner"></span> Applying...</>
+                          ) : (
+                            'Apply Now'
+                          )}
+                        </button>
                       )}
-                    </button>
-                  </div>
+                    </div>
 
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
@@ -348,7 +420,9 @@ const CareerFairPage = () => {
                   placeholder="Tell the company why you're a great fit..."
                   rows={4}
                   value={applyForm.cover_letter}
-                  onChange={(e) => setApplyForm({ ...applyForm, cover_letter: e.target.value })}
+                  onChange={(e) => setApplyForm({
+                    ...applyForm, cover_letter: e.target.value
+                  })}
                 />
               </div>
 
@@ -361,7 +435,9 @@ const CareerFairPage = () => {
                     className="form-input"
                     placeholder="https://github.com/username"
                     value={applyForm.github_url}
-                    onChange={(e) => setApplyForm({ ...applyForm, github_url: e.target.value })}
+                    onChange={(e) => setApplyForm({
+                      ...applyForm, github_url: e.target.value
+                    })}
                   />
                 </div>
                 <div className="form-group">
@@ -371,7 +447,9 @@ const CareerFairPage = () => {
                     className="form-input"
                     placeholder="https://linkedin.com/in/username"
                     value={applyForm.linkedin_url}
-                    onChange={(e) => setApplyForm({ ...applyForm, linkedin_url: e.target.value })}
+                    onChange={(e) => setApplyForm({
+                      ...applyForm, linkedin_url: e.target.value
+                    })}
                   />
                 </div>
               </div>
@@ -383,7 +461,9 @@ const CareerFairPage = () => {
                   className="form-input"
                   placeholder="https://yourportfolio.com"
                   value={applyForm.portfolio_url}
-                  onChange={(e) => setApplyForm({ ...applyForm, portfolio_url: e.target.value })}
+                  onChange={(e) => setApplyForm({
+                    ...applyForm, portfolio_url: e.target.value
+                  })}
                 />
               </div>
 
@@ -398,9 +478,9 @@ const CareerFairPage = () => {
                 <button
                   type="submit"
                   className="btn btn-primary"
-                  disabled={applying === selectedJob.id}
+                  disabled={applying === selectedJob?.id}
                 >
-                  {applying === selectedJob.id ? (
+                  {applying === selectedJob?.id ? (
                     <><span className="btn-spinner"></span> Submitting...</>
                   ) : (
                     '🚀 Submit Application'

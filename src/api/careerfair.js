@@ -29,4 +29,7 @@ export const getJobApplications = (jobId) =>
   API.get(`/careerfair/jobs/${jobId}/applications/`);
 
 export const updateApplicationStatus = (applicationId, status) =>
-  API.patch(`/careerfair/applications/${applicationId}/status/`, { status });
+  API.patch(
+    `/careerfair/applications/${applicationId}/status/`,
+    { status }
+  );

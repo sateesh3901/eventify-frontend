@@ -310,3 +310,21 @@
   .cf-select                { width: 100%; }
   .modal                    { max-height: 95vh; }
 }
+
+/* ── Applied Banner ─────────────────────────────────────────── */
+.job-card--applied {
+  border: 2px solid var(--success) !important;
+}
+
+.applied-banner {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #d4edda;
+  color: var(--success);
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
