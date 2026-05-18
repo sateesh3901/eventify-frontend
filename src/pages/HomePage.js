@@ -1,8 +1,9 @@
+/* eslint-disable */
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { getAllEvents } from '../api/events';
 import { useAuth } from '../context/AuthContext';
-import Loader from '../components/common/Loader';
+import { SkeletonGrid } from '../components/common/SkeletonCard';
 import toast from 'react-hot-toast';
 import {
   FiSearch, FiCalendar, FiMapPin,
@@ -22,11 +23,30 @@ const EVENT_TYPES = [
 
 // ── Stats Data ────────────────────────────────────────────────
 const PLATFORM_STATS = [
-  { value: '500+',  label: 'Events Hosted',     icon: '🎪' },
-  { value: '50K+',  label: 'Tickets Sold',       icon: '🎟️' },
-  { value: '200+',  label: 'Companies Hiring',   icon: '💼' },
-  { value: '10K+',  label: 'Happy Attendees',    icon: '😊' },
+  { value: '500+',  label: 'Events Hosted',   icon: '🎪' },
+  { value: '50K+',  label: 'Tickets Sold',     icon: '🎟️' },
+  { value: '200+',  label: 'Companies Hiring', icon: '💼' },
+  { value: '10K+',  label: 'Happy Attendees',  icon: '😊' },
 ];
+
+// ── Improvement 1 — Banner Gradients ─────────────────────────
+const BANNER_GRADIENTS = {
+  career_fair : 'linear-gradient(135deg, #1F3864, #2E75B6)',
+  concert     : 'linear-gradient(135deg, #6B0F1A, #B91372)',
+  conference  : 'linear-gradient(135deg, #0F3460, #16213E)',
+  workshop    : 'linear-gradient(135deg, #1A4731, #2D8653)',
+  hackathon   : 'linear-gradient(135deg, #2D1B69, #11998E)',
+  general     : 'linear-gradient(135deg, #373B44, #4286F4)',
+};
+
+const EVENT_TYPE_EMOJI = {
+  career_fair : '💼',
+  concert     : '🎵',
+  conference  : '🎤',
+  workshop    : '🛠️',
+  hackathon   : '💻',
+  general     : '🎪',
+};
 
 const HomePage = () => {
   const { isLoggedIn, isHost } = useAuth();
@@ -37,17 +57,14 @@ const HomePage = () => {
   const [searchQuery, setSearch]    = useState('');
   const [activeType, setActiveType] = useState('');
 
-const fetchEvents = async () => {
+  const fetchEvents = async () => {
     setLoading(true);
     try {
       const params = { type: activeType || undefined };
       const res    = await getAllEvents(params);
-
-      // ── Safe check ────────────────────────────────────────
       const eventsData = res?.data?.events || res?.data || [];
       const safeEvents = Array.isArray(eventsData) ? eventsData : [];
       setEvents(safeEvents.slice(0, 6));
-
     } catch {
       toast.error('Failed to load events.');
       setEvents([]);
@@ -56,7 +73,6 @@ const fetchEvents = async () => {
     }
   };
 
-    // ── Fetch Events ──────────────────────────────────────────
   useEffect(() => {
     fetchEvents();
   }, [activeType]);
@@ -70,14 +86,22 @@ const fetchEvents = async () => {
   // ── Event Type Badge ──────────────────────────────────────
   const getTypeBadge = (type) => {
     const map = {
-      career_fair : { label: 'Career Fair',  cls: 'badge-accent'   },
-      concert     : { label: 'Concert',      cls: 'badge-primary'  },
-      conference  : { label: 'Conference',   cls: 'badge-success'  },
-      workshop    : { label: 'Workshop',     cls: 'badge-warning'  },
-      hackathon   : { label: 'Hackathon',    cls: 'badge-gray'     },
-      general     : { label: 'General',      cls: 'badge-gray'     },
+      career_fair : { label: 'Career Fair', cls: 'badge-accent'  },
+      concert     : { label: 'Concert',     cls: 'badge-primary' },
+      conference  : { label: 'Conference',  cls: 'badge-success' },
+      workshop    : { label: 'Workshop',    cls: 'badge-warning' },
+      hackathon   : { label: 'Hackathon',   cls: 'badge-gray'    },
+      general     : { label: 'General',     cls: 'badge-gray'    },
     };
     return map[type] || map.general;
+  };
+
+  // ── Improvement 3 — Days Left ─────────────────────────────
+  const getDaysLeft = (dateStr) => {
+    const diff = Math.ceil(
+      (new Date(dateStr) - new Date()) / (1000 * 60 * 60 * 24)
+    );
+    return diff;
   };
 
   return (
@@ -196,7 +220,7 @@ const fetchEvents = async () => {
 
           {/* Events Grid */}
           {loading ? (
-            <Loader message="Loading events..." />
+            <SkeletonGrid count={6} />
           ) : events.length === 0 ? (
             <div className="empty-state">
               <p style={{ fontSize: '3rem' }}>🎪</p>
@@ -206,24 +230,34 @@ const fetchEvents = async () => {
           ) : (
             <div className="grid-3">
               {events.map((event) => {
-                const badge = getTypeBadge(event.event_type);
+                const badge    = getTypeBadge(event.event_type);
+                const daysLeft = getDaysLeft(event.date_time);
+                const fillPct  = Math.round(
+                  (event.tickets_sold / event.ticket_limit) * 100
+                );
+
                 return (
                   <div className="event-card card" key={event.id}>
-                    {/* Banner */}
-                    <div className="event-card__banner">
+
+                    {/* ── Improvement 1 — Colored Banner ── */}
+                    <div
+                      className="event-card__banner"
+                      style={{ background: BANNER_GRADIENTS[event.event_type] || BANNER_GRADIENTS.general }}
+                    >
                       <div className="event-card__banner-placeholder">
-                        {event.event_type === 'career_fair'  && '💼'}
-                        {event.event_type === 'concert'      && '🎵'}
-                        {event.event_type === 'conference'   && '🎤'}
-                        {event.event_type === 'workshop'     && '🛠️'}
-                        {event.event_type === 'hackathon'    && '💻'}
-                        {event.event_type === 'general'      && '🎪'}
+                        {EVENT_TYPE_EMOJI[event.event_type] || '🎪'}
                       </div>
                       <span className={`badge ${badge.cls} event-card__badge`}>
                         {badge.label}
                       </span>
                       {event.is_sold_out && (
                         <span className="event-card__sold-out">SOLD OUT</span>
+                      )}
+                      {/* ── Improvement 3 — Happening Soon Badge ── */}
+                      {!event.is_sold_out && daysLeft > 0 && daysLeft <= 7 && (
+                        <span className="event-card__soon">
+                          🔥 {daysLeft}d left
+                        </span>
                       )}
                     </div>
 
@@ -250,6 +284,20 @@ const fetchEvents = async () => {
                         <div className="event-meta-item">
                           <FiUsers />
                           <span>{event.tickets_remaining} seats left</span>
+                        </div>
+                      </div>
+
+                      {/* ── Improvement 4 — Ticket Progress Bar ── */}
+                      <div className="ticket-progress">
+                        <div className="ticket-progress__labels">
+                          <span>{event.tickets_sold} booked</span>
+                          <span>{fillPct}% full</span>
+                        </div>
+                        <div className="ticket-progress__track">
+                          <div
+                            className="ticket-progress__fill"
+                            style={{ width: `${fillPct}%` }}
+                          ></div>
                         </div>
                       </div>
 

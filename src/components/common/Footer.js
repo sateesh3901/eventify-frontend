@@ -53,7 +53,7 @@ const Footer = () => {
 
         {/* ── Bottom ── */}
         <div className="footer__bottom">
-          <p>© 2026 Eventify. Built with ❤️ by Yenuganti Sateesh</p>
+          <p>© {new Date().getFullYear()} Eventify. Built with ❤️ by Yenuganti Sateesh</p>
           <p>Python · Django · React · MySQL</p>
         </div>
       </div>

@@ -1,6 +1,6 @@
 /* eslint-disable */
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate,Link } from 'react-router-dom';
 import { getEventDetail } from '../../api/events';
 import { getJobOpenings, applyForJob, getMyApplications } from '../../api/careerfair';
 import { useAuth } from '../../context/AuthContext';
